@@ -3,12 +3,12 @@ package etcdutils
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"text/template"
-	"io/ioutil"
 	"time"
 )
 
@@ -135,7 +135,7 @@ func BackupCerts(etcdStaticResourceDir, assetDir string) {
 
 func StopEtcd(etcdManifest, manifestStoppedDir string) error {
 	checkAndCreateDir(manifestStoppedDir)
-	err := os.Rename(etcdManifest, manifestStoppedDir + "/etcd-member.yaml")
+	err := os.Rename(etcdManifest, manifestStoppedDir+"/etcd-member.yaml")
 	return err
 	// Do we need to wait for stopped etcds?
 }
@@ -165,7 +165,7 @@ func EtcdMemberAdd() {
 
 func StartEtcd(etcdManifest, manifestStoppedDir string) error {
 	fmt.Printf("Starting etcd..")
-	return os.Rename(manifestStoppedDir + "/etcd-member.yaml", etcdManifest)
+	return os.Rename(manifestStoppedDir+"/etcd-member.yaml", etcdManifest)
 }
 
 func EtcdMemberRemove() {
@@ -178,12 +178,12 @@ func PopulateTemplate() {
 
 func StartCertRecover(etcdManifest, manifestStoppedDir string) error {
 	fmt.Printf("Starting etcd client cert recovery agent..")
-	return os.Rename(manifestStoppedDir + "/etcd-generate-certs.yaml", etcdManifest)
+	return os.Rename(manifestStoppedDir+"/etcd-generate-certs.yaml", etcdManifest)
 }
 
 func VerifyCerts(etcdStaticResourceDir string) {
 	staticResources, _ := filepath.Glob(etcdStaticResourceDir + "/system:etcd-*")
-	for  len(staticResources) < 9  {
+	for len(staticResources) < 9 {
 		fmt.Printf("Waiting for certs to generate...")
 		time.Sleep(10 * time.Second)
 		staticResources, _ = filepath.Glob(etcdStaticResourceDir + "/system:etcd-*")
@@ -192,7 +192,7 @@ func VerifyCerts(etcdStaticResourceDir string) {
 
 func StopCertRecover(etcdManifest, manifestStoppedDir string) error {
 	fmt.Printf("Stopping etcd client cert recovery agent..")
-	return os.Rename(etcdManifest, manifestStoppedDir + "/etcd-generate-certs.yaml")
+	return os.Rename(etcdManifest, manifestStoppedDir+"/etcd-generate-certs.yaml")
 }
 
 func StopStaticPods(etcdManifest, manifestStoppedDir string) error {
@@ -200,7 +200,7 @@ func StopStaticPods(etcdManifest, manifestStoppedDir string) error {
 	if fds, err := ioutil.ReadDir(etcdManifest); err == nil {
 		for _, fd := range fds {
 			if !fd.IsDir() {
-				os.Rename(etcdManifest + fd.Name(), manifestStoppedDir + fd.Name())
+				os.Rename(etcdManifest+fd.Name(), manifestStoppedDir+fd.Name())
 			}
 		}
 	} else {
@@ -213,7 +213,7 @@ func StartStaticPods(etcdManifest, manifestStoppedDir string) error {
 	if fds, err := ioutil.ReadDir(manifestStoppedDir); err == nil {
 		for _, fd := range fds {
 			if !fd.IsDir() {
-				os.Rename(manifestStoppedDir + fd.Name(), etcdManifest + fd.Name())
+				os.Rename(manifestStoppedDir+fd.Name(), etcdManifest+fd.Name())
 			}
 		}
 	} else {
