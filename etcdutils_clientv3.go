@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/coreos/etcd/pkg/fileutil"
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/clientv3/snapshot"
-	"go.etcd.io/etcd/embed"
+	"github.com/coreos/etcd/clientv3"
+	"github.com/coreos/etcd/embed"
+	"github.com/coreos/etcd/clientv3/snapshot"
 	"go.uber.org/zap"
 )
 
@@ -73,9 +73,10 @@ func RestoreSnapshot(ctx context.Context, cfg embed.Config, peerURLs []string, d
 		InitialCluster:      cfg.InitialCluster,
 		InitialClusterToken: cfg.InitialClusterToken,
 	})
+	return nil
 }
 
-func EtcdMemberAdd(ctx context.Context, cfg clientv3.Config, peerURLs []string) error {
+func EtcdMemberAdd(ctx context.Context, cfg clientv3.Config, newMemberName string, peerURLs []string) error {
 	cli, err := clientv3.New(cfg)
 	if err != nil {
 		return err
